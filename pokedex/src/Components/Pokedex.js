@@ -42,7 +42,7 @@ class Pokedex extends React.Component {
             let r = await axios.get(URL)
 
             if (r.status === 200) {
-                localStorage.setItem("lastUpdate", new Date)
+                localStorage.setItem("lastUpdate", new Date())
                 localStorage.setItem("pokemonList", JSON.stringify(r.data))
             }
         }
