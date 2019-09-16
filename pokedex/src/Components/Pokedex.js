@@ -66,7 +66,7 @@ class Pokedex extends React.Component {
                 return lc.match(new RegExp(filter))
             })
         } else {
-            newList = JSON.parse(localStorage.getItem("pokemonList")).results
+            newList = []
         }
         this.setState({filtered : newList})
     }
