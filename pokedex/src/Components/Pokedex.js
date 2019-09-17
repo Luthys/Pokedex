@@ -1,5 +1,6 @@
 import React from 'react'
 import axios from "axios"
+import { request } from 'graphql-request';
 
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
@@ -9,6 +10,10 @@ import SearchBar from "./SearchBar"
 import Card from "./Card"
 import Profile from "./Profile"
 
+
+const headers = new Headers();
+headers.append('Content-Type', 'application/json');
+
 class Pokedex extends React.Component {
     constructor(props) {
         super(props)
@@ -16,7 +21,8 @@ class Pokedex extends React.Component {
             value: "",
             list: [],
             filtered: [],
-            selectedItem: ''
+            selectedItem: '',
+            averageList: []
         }
         this.handleInput = this.handleInput.bind(this)
     }
@@ -47,7 +53,7 @@ class Pokedex extends React.Component {
             }
         }
 
-        this.setState({ 
+        this.setState({
             list: JSON.parse(localStorage.getItem("pokemonList")).results,
         })
     }
@@ -59,7 +65,7 @@ class Pokedex extends React.Component {
         let newList = []
         let currentList = this.state.list
 
-        if(event.target.value !== "" && event.target.value.length >= 2) {
+        if (event.target.value !== "" && event.target.value.length >= 2) {
             newList = currentList.filter(item => {
                 const lc = item.name.toLowerCase()
                 const filter = event.target.value.toLowerCase()
@@ -68,16 +74,56 @@ class Pokedex extends React.Component {
         } else {
             newList = []
         }
-        this.setState({filtered : newList})
+        this.setState({ filtered: newList })
     }
 
     async handleClick(url) {
-        if (url !== "") {                        
+        this.setState({ averageList: [] })
+        if (url !== "") {
             let r = await axios.get(url)
             if (r.status === 200) {
-                this.setState({selectedItem: r.data})
+                this.setState({ selectedItem: r.data })
+                this.getAverageList(r.data.types)
             }
         }
+    }
+
+    async getAverageList(types) {
+        const URL_AVG = "https://pokestats-gmtiqydwwa.now.sh/"
+
+        let list = []
+
+        for (let i = 0; i < types.length; i++) {
+
+            let type = types[i].type.name.toUpperCase()
+            let query = `{
+                    averageStats(type1: ${type}) {
+                        meta { lastUpdated }
+                        avg {
+                            attack
+                            defense
+                            hp
+                            specialAttack
+                            specialDefense
+                            speed
+                        }
+                        types
+                    }
+                }`;
+
+            let r = await request(URL_AVG, query);
+
+            let averageStats = r.averageStats
+
+            let o = {}
+            o.name = types[i].type.name
+            o.avg = Object.keys(averageStats.avg).map(function (key) {
+                return [key, averageStats.avg[key]];
+            });
+
+            list.push(o)
+        }
+        this.setState({ averageList: list })
     }
 
     render() {
@@ -89,19 +135,19 @@ class Pokedex extends React.Component {
                 />
                 <Row>
                     <Col xs={4}>
-                    <span>Total : {this.state.filtered.length}</span>
+                        <span>Total : {this.state.filtered.length}</span>
                         {
                             this.state.filtered.map((item, index) =>
-                                <a 
-                                key={index} 
-                                style={{ cursor: 'pointer' }} 
-                                onClick={() => {this.handleClick(item.url)}}>
+                                <a
+                                    key={index}
+                                    style={{ cursor: 'pointer' }}
+                                    onClick={() => { this.handleClick(item.url) }}>
                                     <Card name={item.name} url={item.url} />
                                 </a>
                             )
                         }
                     </Col>
-                    <Col xs={8}><Profile info={this.state.selectedItem}/></Col>
+                    <Col xs={8}><Profile averageList={this.state.averageList} info={this.state.selectedItem} /></Col>
                 </Row>
             </Container>
         )

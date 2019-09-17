@@ -7,83 +7,167 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import ProgressBar from 'react-bootstrap/ProgressBar'
 
+
 class Profil extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            imgUrl: ""
+            imgUrl: "",
+            averageList: [],
+            count: 0
         }
     }
 
+    componentDidMount() {
+        this.intervalID = setInterval(() => this.step(), 500);
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.intervalID);
+    }
+
+    getType() {
+        let info = this.props.info
+
+        let types = []
+        for (let i = 0; i < info.types.length; i++) {
+            types.push(info.types[i].type.name)
+        }
+        return types
+    }
+
+    step() {
+        let sum = this.state.count + 11
+
+        if (sum >= 100)
+            sum = 0
+
+        this.setState(state => ({
+            count: sum
+        }));
+    }
+
+    getStat() {
+        let info = this.props.info
+
+        let stats = []
+        for (let i = 0; i < info.stats.length; i++) {
+            let stat = {}
+            let name = info.stats[i].stat.name
+
+            stat.number = info.stats[i].base_stat
+            stat.name = name.charAt(0).toUpperCase() + name.slice(1).replace("-", " ")
+
+            stats.push(stat)
+        }
+        return stats
+    }
+
     render() {
-        if(this.props.info){
+        if (this.props.info) {
+            let stats = this.getStat()
+            let types = this.getType()
+
             let info = this.props.info
-            
-            let types = []
-            for(let i = 0; i<info.types.length; i++) {
-                types.push(info.types[i].type.name)
-            }
 
-            let stats = []
+            let averageList = this.props.averageList
 
-            for(let i = 0; i < info.stats.length; i++) {
-                let stat = {}
-                let name = info.stats[i].stat.name
 
-                stat.number = info.stats[i].base_stat
-                stat.name = name.charAt(0).toUpperCase() + name.slice(1).replace("-", " ")
-
-                stats.push(stat)
-            }
-
-            return (
-                <Container>
-                    <Row>
-                        <Col xs={2}>
-                                <Image src={info.sprites.front_default}></Image>
-                        </Col>
-                        <Col xs={8} className="mt-2">
-                                <span className="title ">{
-                                        info.name
-                                        .toLowerCase()
-                                        .split(' ')
-                                        .map(char => char.charAt(0).toUpperCase() + char.substring(1))
-                                }</span>
-                        </Col>
-                    </Row>
-                    <Row>
-                        { types.map(type => (
-                            <Col
+            let top = <Container>
+                <Row>
+                    <Col xs={2}>
+                        <Image src={info.sprites.front_default}></Image>
+                    </Col>
+                    <Col xs={8} className="mt-2">
+                        <span className="title ">{
+                            info.name
+                                .toLowerCase()
+                                .split(' ')
+                                .map(char => char.charAt(0).toUpperCase() + char.substring(1))
+                        }</span>
+                    </Col>
+                </Row>
+                <Row>
+                    {types.map(type => (
+                        <Col
                             key={type}
                             className="badge badge-pill mr-1"
                             style={{
                                 backgroundColor: `#${TYPE_COLORS[type]}`,
                                 color: 'white'
                             }}
-                            >
+                        >
                             {
                                 type.toLowerCase().split(' ').map(s => s.charAt(0).toUpperCase() + s.substring(1)).join(' ')
                             }
-                            </Col> 
-                        ))}
-                    </Row>
-                    <Row className="pt-3">
-                        <h1>Stats</h1>
-                    </Row>
-                    {
-                        stats.reverse().map(stat => (
-                            <Row className="pt-2">
-                                <Col xs={4}>
-                                    {stat.name}
+                        </Col>
+                    ))}
+                </Row>
+                <Row className="pt-3">
+                    <h1>Stats</h1>
+                </Row>
+                {
+                    stats.reverse().map(stat => (
+                        <Row className="pt-2">
+                            <Col xs={4}>
+                                {stat.name}
+                            </Col>
+                            <Col>
+                                <ProgressBar now={stat.number} label={`${stat.number}`} />
+                            </Col>
+                        </Row>
+                    ))
+                }
+                <Row className="pt-3">
+                    <h1>Average</h1>
+                </Row>
+            </Container>
+
+            let bot
+
+            if (averageList.length != 0) {
+                bot = <Container>
+                    <Row>
+                        {
+                            averageList.map((item, index) => (
+                                <Col xs={6}>
+                                    <Col
+                                        xs={12}
+                                        key={item.name}
+                                        className="badge badge-pill mr-1"
+                                        style={{
+                                            backgroundColor: `#${TYPE_COLORS[item.name]}`,
+                                            color: 'white'
+                                        }}
+                                    >
+                                        {
+                                            item.name.toLowerCase().split(' ').map(s => s.charAt(0).toUpperCase() + s.substring(1)).join(' ')
+                                        }
+
+                                    </Col>
+                                    {
+                                        item.avg.map(i => (
+                                            <Row className="pt-3">
+                                                <Col>
+                                                    {i[0].charAt(0).toUpperCase() + i[0].slice(1).replace("-", " ")}
+                                                </Col>
+                                                <Col>
+                                                    <ProgressBar now={i[1]} label={`${i[1]}`} />
+                                                </Col>
+                                            </Row>
+                                        ))
+                                    }
                                 </Col>
-                                <Col>
-                                    <ProgressBar now={stat.number} label={`${stat.number}`} />
-                                </Col>
-                            </Row>
-                        ))
-                    }
+
+                            ))
+                        }
+                    </Row>
                 </Container>
-            )
+            } else {
+                bot = <ProgressBar now={this.state.count} />
+            }
+            return <div>{top} {bot}</div>
+
         }
         return null
     }

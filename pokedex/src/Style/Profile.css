@@ -1,4 +1,12 @@
-
-.title{
+.title {
     font-size: 50px
+}
+
+.progress {
+    margin: 15px;
+}
+
+.progress .progress-bar.active {
+    font-weight: 700;
+    animation: progress-bar-stripes .5s linear infinite;
 }
