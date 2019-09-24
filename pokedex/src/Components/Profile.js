@@ -75,10 +75,10 @@ class Profil extends React.Component {
 
             let top = <Container>
                 <Row>
-                    <Col xs={2}>
+                    <Col xs={4} sm={2}>
                         <Image src={info.sprites.front_default}></Image>
                     </Col>
-                    <Col xs={8} className="mt-2">
+                    <Col xs={8} sm={10} className="mt-2">
                         <span className="title ">{
                             info.name
                                 .toLowerCase()
@@ -107,8 +107,8 @@ class Profil extends React.Component {
                     <h1>Stats</h1>
                 </Row>
                 {
-                    stats.reverse().map(stat => (
-                        <Row className="pt-2">
+                    stats.reverse().map((stat, index) => (
+                        <Row key={index} className="pt-2">
                             <Col xs={4}>
                                 {stat.name}
                             </Col>
@@ -119,18 +119,18 @@ class Profil extends React.Component {
                     ))
                 }
                 <Row className="pt-3">
-                    <h1>Average</h1>
+                    <h1>Average per type</h1>
                 </Row>
             </Container>
 
             let bot
 
-            if (averageList.length != 0) {
+            if (averageList.length !== 0) {
                 bot = <Container>
                     <Row>
                         {
                             averageList.map((item, index) => (
-                                <Col xs={6}>
+                                <Col key={index} lg={6} sm={12} xs={12}>
                                     <Col
                                         xs={12}
                                         key={item.name}
@@ -146,8 +146,8 @@ class Profil extends React.Component {
 
                                     </Col>
                                     {
-                                        item.avg.map(i => (
-                                            <Row className="pt-3">
+                                        item.avg.map((i, index) => (
+                                            <Row key={index} className="pt-1">
                                                 <Col>
                                                     {i[0].charAt(0).toUpperCase() + i[0].slice(1).replace("-", " ")}
                                                 </Col>
@@ -164,7 +164,9 @@ class Profil extends React.Component {
                     </Row>
                 </Container>
             } else {
-                bot = <ProgressBar now={this.state.count} />
+                bot = <div className="container-loader">
+                    <img className="loader" src="/load.gif" alt="LOADING..."></img>
+                </div>
             }
             return <div>{top} {bot}</div>
 

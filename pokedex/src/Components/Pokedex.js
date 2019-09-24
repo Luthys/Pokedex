@@ -134,7 +134,7 @@ class Pokedex extends React.Component {
                     onHandleInput={this.handleInput}
                 />
                 <Row>
-                    <Col xs={4}>
+                    <Col xs={12} sm={4} lg={4}>
                         <span>Total : {this.state.filtered.length}</span>
                         {
                             this.state.filtered.map((item, index) =>
@@ -147,9 +147,9 @@ class Pokedex extends React.Component {
                             )
                         }
                     </Col>
-                    <Col xs={8}><Profile averageList={this.state.averageList} info={this.state.selectedItem} /></Col>
+                    <Col xs={12} sm={8} lg={8}><Profile averageList={this.state.averageList} info={this.state.selectedItem} /></Col>
                 </Row>
-            </Container>
+            </Container >
         )
 
     }

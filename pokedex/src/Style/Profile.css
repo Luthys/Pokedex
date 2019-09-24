@@ -10,3 +10,11 @@
     font-weight: 700;
     animation: progress-bar-stripes .5s linear infinite;
 }
+
+.loader {
+    width: 40%
+}
+
+.container-loader {
+    text-align: center
+}
