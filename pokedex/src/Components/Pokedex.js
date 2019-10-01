@@ -59,7 +59,7 @@ class Pokedex extends React.Component {
     }
 
     handleInput(event) {
-        let value = event.target.value
+        let value = event.target.value.toString()
         this.setState({ value: value })
 
         let newList = []
@@ -100,9 +100,9 @@ class Pokedex extends React.Component {
                     averageStats(type1: ${type}) {
                         meta { lastUpdated }
                         avg {
+                            hp
                             attack
                             defense
-                            hp
                             specialAttack
                             specialDefense
                             speed
@@ -134,7 +134,7 @@ class Pokedex extends React.Component {
                     onHandleInput={this.handleInput}
                 />
                 <Row>
-                    <Col xs={12} sm={4} lg={4}>
+                    <Col xs={{ span: 12, order: 2 }} sm={{ span: 4, order: 1 }} lg={{ span: 4, order: 1 }}>
                         <span>Total : {this.state.filtered.length}</span>
                         {
                             this.state.filtered.map((item, index) =>
@@ -147,7 +147,7 @@ class Pokedex extends React.Component {
                             )
                         }
                     </Col>
-                    <Col xs={12} sm={8} lg={8}><Profile averageList={this.state.averageList} info={this.state.selectedItem} /></Col>
+                    <Col xs={{ span: 12, order: 1 }} sm={{ span: 8, order: 2 }} lg={{ span: 8, order: 2 }}><Profile averageList={this.state.averageList} info={this.state.selectedItem} /></Col>
                 </Row>
             </Container >
         )
