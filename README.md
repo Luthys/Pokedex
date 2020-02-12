@@ -3,11 +3,18 @@ This is my first project with React.
 
 ___
 
-
 ## Demo
 
 You can find it [HERE](https://pokedex.smartins.fr/)
 
+___
+
+## Authors
+
+* **Sébastien Martins**
+  * [Website](https://smartins.fr/)
+  * [Gitlab](https://gitlab.com/Sebs12)
+  * [Github](https://github.com/Luthys)
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
